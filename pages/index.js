@@ -1,5 +1,5 @@
 import Layout from "@/components/Layout";
-import styles from "@/styles/Home.module.css";
+// import styles from "@/styles/Home.module.css";
 import { API_URL } from "@/config/index";
 import EventItem from "@/components/EventItem";
 import Link from "next/link";

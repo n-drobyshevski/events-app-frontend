@@ -12,6 +12,9 @@ export default function EventPage({ id, eventData }) {
   const deleteEvent = () => {};
   return (
     <Layout>
+      <Link href={"events/"}>
+        <a className={styles.back}>Go Back</a>
+      </Link>
       <div className={styles.event}>
         <div className={styles.controls}>
           <Link href={`events/edit/${id}`}>
@@ -23,29 +26,26 @@ export default function EventPage({ id, eventData }) {
             <FaTimes /> Delete Event
           </a>
         </div>
-        <span>
-          {eventData.date} at {eventData.time}
-        </span>
         <h1>{eventData.name}</h1>
-        {eventData.image && (
-          <div className={styles.image}>
-            <Image
-              src={eventData.image.data.attributes.formats.medium.url}
-              width="960"
-              height="600"
-            />
-          </div>
-        )}
+        <div className={styles.image}>
+          <Image
+            src={
+              eventData.image.data
+                ? eventData.image.data.attributes.formats.medium.url
+                : "/images/event-default.png"
+            }
+            width="960"
+            height="600"
+          />
+        </div>
         <h3>Performers: </h3>
         <p>{eventData.performers}</p>
         <h3>Description: </h3>
         <p>{eventData.description}</p>
-        <h3>Venue:{eventData.venue} </h3>
+        <h3>Venue: </h3>
+        <p> {eventData.venue}</p>
+        <h3>Address: </h3>
         <p>{eventData.address}</p>
-
-        <Link href={"events/"}>
-          <a className={styles.back}>Go Back</a>
-        </Link>
       </div>
     </Layout>
   );
