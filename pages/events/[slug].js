@@ -8,16 +8,36 @@ import Image from "next/image";
 
 import { FaPencilAlt, FaTimes } from "react-icons/fa";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/router";
+
 export default function EventPage({ id, eventData }) {
-  const deleteEvent = () => {};
+  const router = useRouter();
+
+  const deleteEvent = async () => {
+    if (confirm("Are you sure?")) {
+      const res = await fetch(`${API_URL}/api/events/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        toast.error("Something went wrong");
+      } else {
+        router.push("/events");
+      }
+    }
+  };
+
   return (
     <Layout>
+      <ToastContainer />
       <Link href={"events/"}>
         <a className={styles.back}>Go Back</a>
       </Link>
       <div className={styles.event}>
         <div className={styles.controls}>
-          <Link href={`events/edit/${id}`}>
+          <Link href={`/events/edit/${id}`}>
             <a>
               <FaPencilAlt /> Edit
             </a>
@@ -77,13 +97,3 @@ export async function getStaticProps({ params: { slug } }) {
     revalidate: 1,
   };
 }
-//
-// export async function getServerSideProps({ query: { slug } }) {
-//     const res = await fetch(`${API_URL}/api/events/${slug}`)
-//     const events = await res.json()
-//     return {
-//         props: {
-//             evt: events[0],
-//         }
-//     }
-// }
