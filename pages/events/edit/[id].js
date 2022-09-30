@@ -1,6 +1,9 @@
 import Layout from "@/components/Layout";
+import Modal from "@/components/Modal";
+
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import Link from "next/link";
 import { API_URL } from "@/config/index";
 
@@ -9,6 +12,8 @@ import styles from "@/styles/Add.module.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import moment from "moment/moment";
+import { FaImage } from "react-icons/fa";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function EditEventPage({ evtData, evtId }) {
   const [values, setValues] = useState({
@@ -21,6 +26,13 @@ export default function EditEventPage({ evtData, evtId }) {
     description: evtData.description,
   });
 
+  const [imagePreview, setImagePreview] = useState(
+    evtData.image.data
+      ? evtData.image.data.attributes.formats.thumbnail.url
+      : null
+  );
+
+  const [showModal, setShowModal] = useState(false);
   const router = useRouter();
 
   const submitHandler = async (e) => {
@@ -52,6 +64,20 @@ export default function EditEventPage({ evtData, evtId }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setValues({ ...values, [name]: value });
+  };
+
+  const imageUploaded = async (e) => {
+    const res = await fetch(`${API_URL}/api/events/${evtId}?populate=image`);
+    const updatedData = await res.json();
+    console.log(updatedData.data.attributes);
+    if (updatedData.data.attributes.image.data) {
+      setImagePreview(
+        updatedData.data.attributes.image.data.attributes.formats.thumbnail.url
+      );
+      setShowModal(false);
+    } else {
+      toast.error("Error occurred during fetching updated image preview");
+    }
   };
   return (
     <Layout>
@@ -133,13 +159,41 @@ export default function EditEventPage({ evtData, evtId }) {
         </div>
         <input type="submit" value="Update event" className="btn" />
       </form>
+
+      <h2>Event image</h2>
+      {imagePreview ? (
+        <Image src={imagePreview} height={100} width={170} />
+      ) : (
+        <div>
+          <p>No image uploaded</p>
+        </div>
+      )}
+      <div>
+        <button
+          onClick={() => {
+            setShowModal(true);
+          }}
+          className="btn-secondary"
+        >
+          <FaImage /> Set Image
+        </button>
+      </div>
+
+      <Modal
+        show={showModal}
+        onClose={() => {
+          setShowModal(false);
+        }}
+      >
+        <ImageUpload evtId={evtId} imageUploaded={imageUploaded} />
+      </Modal>
     </Layout>
   );
 }
 
 export async function getServerSideProps({ params: { id } }) {
   // const res = await fetch(`http://localhost:1337/api/events`);
-  const res = await fetch(`${API_URL}/api/events/${id}`);
+  const res = await fetch(`${API_URL}/api/events/${id}?populate=image`);
   const evt = await res.json();
 
   return {
