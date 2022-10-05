@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect, useContext } from "react";
 import Link from "next/link";
 
+import AuthContext from "@/context/AuthContext";
+
 import Layout from "@/components/Layout";
 import styles from "@/styles/AuthFrom.module.css";
 
@@ -15,13 +17,15 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
 
+  const { register, error } = useContext(AuthContext);
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (password !== passwordConfirm) {
       toast.error("passwords do not math!");
       return;
     }
-    console.log(email, password, username);
+    register({ email, password, username });
   };
   return (
     <Layout title="Register User">
