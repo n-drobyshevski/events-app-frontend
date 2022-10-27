@@ -8,7 +8,6 @@ export default function Home({ events }) {
   return (
     <Layout>
       <h1>Events</h1>
-      {console.log(events)}
       {events.length === 0 && <h1>No events to show</h1>}
       {events.map((ev) => (
         <EventItem key={ev.id} evt={ev.attributes} />

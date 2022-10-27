@@ -1,18 +1,29 @@
-import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
-import { useContext } from "react";
-
+import { signOut, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import Link from "next/link";
-import styles from "@/styles/Header.module.css";
+import { FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
+
 import Search from "./Search";
-import AuthContext from "@/context/AuthContext";
+import styles from "@/styles/Header.module.css";
 
 export default function Header() {
-  const { user, logout } = useContext(AuthContext);
+  const { data: session } = useSession();
+  const router = useRouter();
+  // const { user, logout } = useContext(AuthContext);
+
+  const logoutHandler = async (e) => {
+    e.preventDefault();
+    const data = await signOut({
+      redirect: false,
+      callbackUrl: "/",
+    });
+    router.push(data.url);
+  };
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
         <Link href="/">
-          <a> Home</a>
+          <a>Home</a>
         </Link>
       </div>
       <Search />
@@ -23,7 +34,7 @@ export default function Header() {
               <a>Events</a>
             </Link>
           </li>
-          {user ? (
+          {session ? (
             // if loggged in
             <>
               <li>
@@ -37,11 +48,9 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link href="account/logout">
+                <Link href="/">
                   <button
-                    onClick={(e) => {
-                      logout();
-                    }}
+                    onClick={(e) => logoutHandler(e)}
                     className="btn-secondary btn-icon"
                   >
                     <FaSignOutAlt />
